@@ -1,5 +1,5 @@
 import { google, tasks_v1 } from "googleapis";
-import { ProviderOptions, Provider } from "master-list";
+import { ProviderOptions, Provider } from "@master-list/core";
 import { Google } from "../google";
 
 export interface GoogleTasksOptions extends ProviderOptions {

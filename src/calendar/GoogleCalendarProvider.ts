@@ -1,5 +1,5 @@
 import { calendar_v3, google } from "googleapis";
-import { ProviderOptions, Provider } from "master-list";
+import { ProviderOptions, Provider } from "@master-list/core";
 import { Google } from "../google";
 
 export interface GoogleCalendarData {

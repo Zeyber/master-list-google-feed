@@ -1,5 +1,5 @@
 import { gmail_v1, google } from "googleapis";
-import { ProviderOptions, Provider } from "master-list";
+import { ProviderOptions, Provider } from "@master-list/core";
 import { Google } from "../google";
 
 export interface GoogleGmailOptions extends ProviderOptions {

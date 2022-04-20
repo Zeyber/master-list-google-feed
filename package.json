@@ -1,21 +1,19 @@
 {
-  "name": "master-list-google-provider",
+  "name": "@zeyber/master-list-google-provider",
   "version": "0.1.0",
   "description": "Master List Provider for Google",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -b",
-    "postinstall": "npm run build"
+    "build": "tsc",
+    "prepublish": "npm run build"
   },
   "author": "Caine Rotherham",
   "dependencies": {
+    "@master-list/core": "^0.1.0",
     "googleapis": "^72.0.0"
   },
-  "peerDependencies": {
-    "master-list": "git://github.com/zeyber/master-list.git"
-  },
   "devDependencies": {
-    "typescript": "^4.6.3",
-    "@googleapis/docs": "^0.2.0"
+    "@googleapis/docs": "^0.2.0",
+    "typescript": "^4.6.3"
   }
 }
