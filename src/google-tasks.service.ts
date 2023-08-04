@@ -1,44 +1,36 @@
-import { google, tasks_v1 } from "googleapis";
-import { ProviderOptions, Provider } from "@master-list/core";
-import { Google } from "../google";
+import { Injectable } from '@nestjs/common';
+import { tasks_v1, google } from 'googleapis';
+import { Google } from './google';
 
-export interface GoogleTasksOptions extends ProviderOptions {
+export interface GoogleTasksOptions {
   token: string;
 }
 
-const defaultOptions: ProviderOptions = {
-  providerName: "Tasks",
+const defaultOptions = {
+  token: '.credentials/google-token.json',
 };
 
-export class GoogleTasksProvider extends Provider {
+const ICON_PATH = '/assets/icon-7.png';
+
+@Injectable()
+export class GoogleTasksService {
   private api: tasks_v1.Tasks;
   private google: Google;
 
-  constructor(public options: GoogleTasksOptions) {
-    super({
-      ...defaultOptions,
-      ...options,
-    });
+  initialize() {
+    this.google = new Google(defaultOptions);
+    this.connect();
   }
 
-  initialize(): Promise<boolean> {
-    return super.initialize(async () => {
-      this.google = new Google(this.settings);
-      await this.connect();
-    });
-  }
-
-  reload() {
-    return super.reload(async () => {
-      return await this.getData();
-    });
+  get() {
+    return this.getData();
   }
 
   async connect() {
     const auth = await this.google.getAuth();
 
     if (auth) {
-      this.api = google.tasks({ version: "v1", auth });
+      this.api = google.tasks({ version: 'v1', auth });
     }
   }
 
@@ -69,8 +61,10 @@ export class GoogleTasksProvider extends Provider {
 
       const tasks = newData.tasks;
       const today = tasks.filter((task) => isToday(task.due));
-      const items = today.map((task) => `${task.title}`);
-      resolve(items);
+      const items = today.map((task) => {
+        return { message: `${task.title}`, icon: ICON_PATH };
+      });
+      resolve({ data: items });
     });
   }
 }

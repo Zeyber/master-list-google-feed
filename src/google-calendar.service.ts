@@ -1,49 +1,41 @@
-import { calendar_v3, google } from "googleapis";
-import { ProviderOptions, Provider } from "@master-list/core";
-import { Google } from "../google";
+import { Injectable } from '@nestjs/common';
+import { calendar_v3, google } from 'googleapis';
+import { Google } from './google';
 
 export interface GoogleCalendarData {
   calendars?: Array<any>;
   events?: Array<any>;
 }
 
-export interface GoogleCalendarOptions extends ProviderOptions {
+export interface GoogleCalendarOptions {
   token: string;
 }
 
-const defaultOptions: ProviderOptions = {
-  providerName: "Calendar",
+const defaultOptions = {
+  token: '.credentials/google-token.json',
 };
 
-export class GoogleCalendarProvider extends Provider {
+const ICON_PATH = '/assets/icon-5.png';
+
+@Injectable()
+export class GoogleCalendarService {
   private api: calendar_v3.Calendar;
   private google: Google;
 
-  constructor(public options: GoogleCalendarOptions) {
-    super({
-      ...defaultOptions,
-      ...options,
-    });
+  initialize() {
+    this.google = new Google(defaultOptions);
+    this.connect();
   }
 
-  initialize(): Promise<boolean> {
-    return super.initialize(async () => {
-      this.google = new Google(this.settings);
-      await this.connect();
-    });
-  }
-
-  reload() {
-    return super.reload(async () => {
-      return await this.getData();
-    });
+  get() {
+    return this.getData();
   }
 
   async connect() {
     const auth = await this.google.getAuth();
 
     if (auth) {
-      this.api = google.calendar({ version: "v3", auth });
+      this.api = google.calendar({ version: 'v3', auth });
     }
   }
 
@@ -51,7 +43,7 @@ export class GoogleCalendarProvider extends Provider {
     return events.sort(
       (a, b) =>
         new Date(a.start.dateTime || a.start.date).getTime() -
-        new Date(b.start.dateTime || b.start.date).getTime()
+        new Date(b.start.dateTime || b.start.date).getTime(),
     );
   }
 
@@ -73,16 +65,21 @@ export class GoogleCalendarProvider extends Provider {
           timeMin: convertToDate(new Date()).toISOString(),
           maxResults: 100,
           singleEvents: true,
-          orderBy: "startTime",
+          orderBy: 'startTime',
         });
         events.push(...eventsData?.data?.items);
       }
 
       events = this.getEventsCombined(events);
       const eventsToday = this.getEventsToday(events);
-      const items = eventsToday.map((event) => this.formatEvent(event));
+      const items = eventsToday.map((event) => {
+        return {
+          message: this.formatEvent(event),
+          icon: ICON_PATH,
+        };
+      });
 
-      resolve(items);
+      resolve({ data: items });
     });
   }
 
