@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { calendar_v3, google } from 'googleapis';
 import { Google } from './google';
+import { of } from 'rxjs';
 
 export interface GoogleCalendarData {
   calendars?: Array<any>;
@@ -27,8 +28,17 @@ export class GoogleCalendarService {
     this.connect();
   }
 
+  getInitialized(): boolean {
+    return !!this.api;
+  }
+
   get() {
-    return this.getData();
+    if (this.getInitialized()) {
+      return this.getData();
+    }
+    return of({
+      data: [{ message: 'Google Feed not initialized', icon: ICON_PATH }],
+    });
   }
 
   async connect() {
@@ -49,37 +59,51 @@ export class GoogleCalendarService {
 
   async getData() {
     return new Promise(async (resolve, reject) => {
-      const calendarData = await this.api.calendarList.list();
-      const calendars = calendarData?.data?.items;
-      const calendarIds = calendars?.map((cal) => cal.id);
-
-      if (!calendarIds?.length) {
-        return;
-      }
-
-      let events = [];
-
-      for (const id of calendarIds) {
-        const eventsData = await this.api.events.list({
-          calendarId: id,
-          timeMin: convertToDate(new Date()).toISOString(),
-          maxResults: 100,
-          singleEvents: true,
-          orderBy: 'startTime',
-        });
-        events.push(...eventsData?.data?.items);
-      }
-
-      events = this.getEventsCombined(events);
-      const eventsToday = this.getEventsToday(events);
-      const items = eventsToday.map((event) => {
-        return {
-          message: this.formatEvent(event),
-          icon: ICON_PATH,
-        };
+      const calendarData = await this.api.calendarList.list().catch((error) => {
+        console.error(error);
+        return undefined;
       });
 
-      resolve({ data: items });
+      if (calendarData) {
+        const calendars = calendarData?.data?.items;
+        const calendarIds = calendars?.map((cal) => cal.id);
+
+        if (!calendarIds?.length) {
+          return;
+        }
+
+        let events = [];
+
+        for (const id of calendarIds) {
+          const eventsData = await this.api.events.list({
+            calendarId: id,
+            timeMin: convertToDate(new Date()).toISOString(),
+            maxResults: 100,
+            singleEvents: true,
+            orderBy: 'startTime',
+          });
+          events.push(...eventsData?.data?.items);
+        }
+
+        events = this.getEventsCombined(events);
+        const eventsToday = this.getEventsToday(events);
+        const items = eventsToday.map((event) => {
+          return {
+            message: this.formatEvent(event),
+            icon: ICON_PATH,
+          };
+        });
+
+        resolve({ data: items });
+      }
+      resolve({
+        data: [
+          {
+            message: 'An error occured. Please check server',
+            icon: ICON_PATH,
+          },
+        ],
+      });
     });
   }
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { gmail_v1, google } from 'googleapis';
 import { Google } from './google';
+import { of } from 'rxjs';
 
 export interface GoogleGmailOptions {
   token: string;
@@ -22,8 +23,17 @@ export class GoogleGmailService {
     this.connect();
   }
 
+  getInitialized(): boolean {
+    return !!this.api;
+  }
+
   get() {
-    return this.getData();
+    if (this.getInitialized()) {
+      return this.getData();
+    }
+    return of({
+      data: [{ message: 'Google Feed not initialized', icon: ICON_PATH }],
+    });
   }
 
   async connect() {
@@ -36,20 +46,36 @@ export class GoogleGmailService {
 
   async getData() {
     return new Promise(async (resolve, reject) => {
-      const threadsData = await this.api.users.threads.list({
-        userId: 'me',
-        q: 'is:unread label:inbox',
-        includeSpamTrash: false,
-      });
-
-      const threads = threadsData.data.threads;
-      const items = threads
-        ?.filter((thread) => thread.snippet.length)
-        .map((msg) => {
-          return { message: `${msg.snippet}`, icon: ICON_PATH };
+      const threadsData = await this.api.users.threads
+        .list({
+          userId: 'me',
+          q: 'is:unread label:inbox',
+          includeSpamTrash: false,
+        })
+        .catch((error) => {
+          console.log(error);
+          return undefined;
         });
 
-      resolve({ data: items });
+      if (threadsData) {
+        const threads = threadsData.data.threads;
+        const items = threads
+          ?.filter((thread) => thread.snippet.length)
+          .map((msg) => {
+            return { message: `${msg.snippet}`, icon: ICON_PATH };
+          });
+
+        resolve({ data: items });
+      }
+
+      resolve({
+        data: [
+          {
+            message: 'An error occured. Please check server',
+            icon: ICON_PATH,
+          },
+        ],
+      });
     });
   }
 }
