@@ -17,16 +17,16 @@ export class AppController {
 
   @Get('calendar')
   async getCalendar() {
-    return await this.googleCalendarService.getData();
+    return await this.googleCalendarService.get();
   }
 
   @Get('gmail')
   async getGmail() {
-    return await this.googleGmailService.getData();
+    return await this.googleGmailService.get();
   }
 
   @Get('tasks')
   async getTasks() {
-    return await this.googleTasksService.getData();
+    return await this.googleTasksService.get();
   }
 }
