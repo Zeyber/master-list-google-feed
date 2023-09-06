@@ -1,73 +1,53 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Master List Google Feed
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This feed tells you when you have unread emails from Gmail, unfinished tasks due with Google Tasks or upcoming events on Google Calendar.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+It uses Google's api (googleapis) to get information from these services.
 
 ## Installation
 
-```bash
-$ npm install
-```
+### NPM
 
-## Running the app
+-   Install by running `npm install @zeyber/master-list-google-feed` in the terminal.
+-   Run from installed location with `PORT=XXXX node ./node_modules/@zeyber/master-list-google-feed/dist/main.js`. Define the port by replacing `PORT=XXXX` (eg. `PORT=3010 ...`). The default port is 3000.
 
-```bash
-# development
-$ npm run start
+### Clone from Github
 
-# watch mode
-$ npm run start:dev
+-   Clone with `git clone https://github.com/Zeyber/master-list-google-feed`.
 
-# production mode
-$ npm run start:prod
-```
+#### Build
 
-## Test
+-   Build with `npm run build`.
+-   Run with `PORT=3000 node dist/main.js`.
 
-```bash
-# unit tests
-$ npm run test
+#### Run in Development mode
 
-# e2e tests
-$ npm run test:e2e
+-   Start with `PORT=3000 npm start`.
 
-# test coverage
-$ npm run test:cov
-```
+## Usage
 
-## Support
+### Authentication
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+-   Get your Google API Credentials file and put it in `.credentials/google-credentials.json`. Follow [this](https://developers.google.com/workspace/guides/create-credentials) guide for more information.
+-   Start running the app and follow instructions to create your token file that authorizes api usage.
+-   When running the app, googleapis will use this token to make calls to the API.
 
-## Stay in touch
+### Reading Feed Data
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+After the feed is initialized, you will be able to request JSON formatted data from the feed at its address.
+To see this in action:
 
-## License
+-   Open your browser and go url `http://localhost:3000/gmail`, `http://localhost:3000/tasks` or `http://localhost:3000/calendar` (or whichever address you have the app running).
+-   You will see a JSON-formatted response with relevant data.
 
-Nest is [MIT licensed](LICENSE).
+This format is structured in a way interpretable by the [Master List](https://github.com/Zeyber/master-list) apps. But you could also use this feed for other purposes if you wanted.
+
+## About Master List
+
+An organizational list that leverages third-party APIs and displays information in a simple list.
+
+Sometimes managing so many tasks can become overwhelming (eg. emails, agenda, tasks, social media, communications across multiple platforms). It is easy lose track of what needs to be done, when and how much you really need to do.
+
+Master List has an [App version for Browser](https://github.com/Zeyber/master-list) and a [CLI version](https://github.com/Zeyber/master-list-cli). It features connecting to APIs or feeds that can be configured to read relevant important information that ordinary users may require.
+
+[Find out more here](https://github.com/Zeyber/master-list)
